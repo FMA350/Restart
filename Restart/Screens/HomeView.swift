@@ -12,7 +12,8 @@ struct HomeView: View {
     //this value, since it is the value the variable would have
     //if the app was on this screen.
     @AppStorage("onboarding") var isOnboardingViewActive: Bool = false
-
+    @State private var isAnimating: Bool = false
+    
     
     var body: some View {
         VStack (spacing: 20){
@@ -26,9 +27,11 @@ struct HomeView: View {
                     .resizable()
                     .scaledToFit()
                     .padding()
+                    .offset(y: isAnimating ? 35 : -35)
+                    .animation(.easeOut(duration: 4).repeatForever() , value: isAnimating)
                 //Circles
                 CircleGroupView(ShapeColor: .gray, ShapeOpacity: 0.1)
-                //Image
+                
             }// : Zstack
             //MARK: - Center
             Text("""
@@ -47,7 +50,9 @@ struct HomeView: View {
             
           //  Spacer()
             Button {
-                isOnboardingViewActive = true;
+                withAnimation(.easeOut) {
+                    isOnboardingViewActive = true;
+                }
             }
             label: {
                 Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
@@ -59,7 +64,11 @@ struct HomeView: View {
             .buttonBorderShape(.capsule)
             .controlSize(.large)
         } // :VStack
-        
+        .onAppear(perform: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                isAnimating = true
+            })
+        })
     }
 }
 
