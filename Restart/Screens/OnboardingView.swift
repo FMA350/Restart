@@ -15,7 +15,8 @@ struct OnboardingView: View {
     @State private var buttonOffset: CGFloat = 0;
     @State private var isAnimating : Bool = false   //switcher
     @State private var imageOffset : CGSize = .zero
-    
+    @State private var indicatorOpacity : Double = 1.0
+    @State private var textTitle: String = "Share"
     var body: some View {
         ZStack {
             Color("ColorBlue")
@@ -27,10 +28,12 @@ struct OnboardingView: View {
                 Spacer()
                 VStack(spacing: 0)
                 {
-                    Text("Share")
+                    Text(textTitle)
                         .font(.system(size: 60))
                         .fontWeight(.heavy)
                         .foregroundColor(.white)
+                        .transition(.opacity)
+                        .id(textTitle)
                     Text("""
                         “You have power over your mind - not outside events. Realize this, and you will find strength.”
                         """)
@@ -43,6 +46,7 @@ struct OnboardingView: View {
                 .opacity(isAnimating ? 1 : 0)
                 .offset(y: isAnimating ? 0 : -40)
                 .animation(.easeOut(duration: 1.5), value: isAnimating)
+                
                 //MARK: - CENTER
                 ZStack
                 {
@@ -61,14 +65,38 @@ struct OnboardingView: View {
                                     .onChanged({ gesture in
                                         if abs(imageOffset.width) <= 150 {
                                             imageOffset = gesture.translation
+                                            withAnimation(.linear(duration: 0.25))
+                                            {
+                                                indicatorOpacity = 0
+                                                textTitle = "Conquer"
+                                            }
                                         }
+
                                     })
                                     .onEnded({ _ in
                                         imageOffset = .zero
+                                            withAnimation(.linear(duration: 0.25).delay(2))
+                                            {
+                                                indicatorOpacity = 1.0
+                                            }
+                                            withAnimation(.linear(duration: 0.25))
+                                            {
+                                                textTitle = "Share"
+                                            }
                                     })
                         )
                         .animation(.easeOut(duration: 1), value: imageOffset)
                 } // : ZSTACK Center
+                .overlay(
+                    Image(systemName: "arrow.left.and.right.circle")
+                        .font(.system(size: 44,weight: .ultraLight))
+                        .foregroundColor(.white)
+                        .offset(y: 30)
+                        .opacity(isAnimating ? 1 : 0)
+                        .animation(.easeOut(duration: 1).delay(2), value: isAnimating)
+                        .opacity(indicatorOpacity)
+                    , alignment: .bottom
+                )
                 //MARK: - FOOTER
                 Spacer()
                 ZStack
