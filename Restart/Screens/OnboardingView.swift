@@ -149,6 +149,7 @@ struct OnboardingView: View {
                                         if buttonOffset > buttonWidth / 2{
                                             buttonOffset = buttonWidth - 80
                                             isOnboardingViewActive = false
+                                            playSound(sound: "chimeup", type: "mp3")
                                         }
                                         else
                                         {
@@ -172,13 +173,13 @@ struct OnboardingView: View {
         .onAppear(perform: {
             isAnimating = true
         })
-        
-       
+        .preferredColorScheme(.dark)
     }
 }
 
 struct OnboardingView_Previews: PreviewProvider {
     static var previews: some View {
         OnboardingView()
+            .previewDevice(PreviewDevice(rawValue: "iPhone11"))
     }
 }
